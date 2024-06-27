@@ -15,7 +15,6 @@ prev.addEventListener("click", () => {
 });
 
 next.addEventListener("click", () => {
-  console.log("next click");
   if (active + 1 > lengthItem) active = 0;
   else active += 1;
   reloadSlider();
@@ -28,7 +27,6 @@ let autoNextSlider = setInterval(() => {
 const reloadSlider = () => {
   // offsetLeft 與 relative 的距離
   let checkLeft = items[active].offsetLeft;
-  console.log("left", checkLeft);
   list.style.left = -checkLeft + "px";
 
   const lastActiveDot = document.querySelector(".slider .dots .active");

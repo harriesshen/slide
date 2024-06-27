@@ -1,0 +1,18 @@
+.carousel {
+  overflow: hidden;
+  width: 500px; /* 設定圖片容器的寬度 */
+  padding: 0px 150px;
+  position: relative;
+  margin: 0 auto;
+}
+
+.carousel-track {
+  display: flex;
+  transform: translate3d(-620px, 0, 0);
+}
+
+.carousel-image {
+  width: 300px; /* 設定每張圖片的寬度 */
+  flex-shrink: 0;
+  margin-right: 10px;
+}
