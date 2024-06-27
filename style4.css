@@ -8,11 +8,40 @@
 
 .carousel-track {
   display: flex;
-  transform: translate3d(-620px, 0, 0);
+  position: relative;
+  padding-bottom: 50px;
 }
 
 .carousel-image {
   width: 300px; /* 設定每張圖片的寬度 */
   flex-shrink: 0;
   margin-right: 10px;
+}
+
+/* dot位置 */
+.carousel .dots {
+  position: absolute;
+  bottom: 10px;
+  color: #fff;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+}
+/* dot */
+.carousel .dots li {
+  list-style: none;
+  width: 15px;
+  height: 15px;
+  background-color: #98959583;
+  margin: 20px;
+  border-radius: 20px;
+  transition: 0.3s;
+}
+.carousel .dots li.active {
+  /* width: 30px; */
+  background-color: rgb(22, 17, 17);
 }
