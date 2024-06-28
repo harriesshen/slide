@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const carouselImages = document.querySelectorAll(".carousel-image");
   const images = Array.from(carouselTrack.children);
   const dots = document.querySelectorAll(".carousel .dots li");
+  let interval;
   // 2. 取得圖片寬度
   const imageWidth = images[0].getBoundingClientRect().width + 10; // 圖片寬度加上間距
   const originalImagesCount = images.length;
@@ -14,65 +15,75 @@ document.addEventListener("DOMContentLoaded", function () {
       realImages.push({ element: node, index: index });
     }
   });
+  const startImageIndex = realImages[0].index;
   // 4. 定義開始圖片位置
-  let currentIndex = realImages[0].index;
-  let prevIndex = currentIndex;
+  let currentIndex = startImageIndex;
   const lastImage = realImages.at(-1).index;
   // 5. 利用translate3d 移動到第一張實際圖片位置
   carouselTrack.style.transform = `translate3d(-${
-    imageWidth * realImages[0].index
+    imageWidth * startImageIndex
   }px,0,0)`;
-
-  function moveDot(index, type = "") {
-    if (type === "remove") {
-      dots[index].classList.remove("active");
-      return;
-    }
-    dots[index].classList.add("active");
+  // 移動dot
+  function addActive(index) {
+    if (realImages.findIndex((i) => i.index === index) !== -1)
+      dots[realImages.findIndex((i) => i.index === index)].classList.add(
+        "active"
+      );
+    carouselImages[index].classList.add("active");
+  }
+  // 刪除Active的dot和img
+  function removeActive() {
+    const dotsActive = document.querySelector(".carousel .dots li.active");
+    const imgsActive = document.querySelectorAll(
+      ".carousel-track .carousel-image.active"
+    );
+    dotsActive.classList.remove("active");
+    imgsActive.forEach((img) => {
+      img.classList.remove("active");
+    });
   }
 
+  function containerTransform(transition, transform) {
+    carouselTrack.style.transition = transition;
+    carouselTrack.style.transform = transform;
+  }
   function moveCarousel() {
-    prevIndex = currentIndex;
+    removeActive();
     currentIndex = currentIndex + 1;
+    // 移動到實際圖片位置
+    containerTransform(
+      "transform 0.5s ease",
+      `translate3d(-${imageWidth * currentIndex}px,0,0)`
+    );
+
     //  往後到clone的圖片後馬上回到第一張實際圖片位置
     if (currentIndex === lastImage + 1) {
       setTimeout(() => {
-        carouselTrack.style.transition = "none";
-        carouselTrack.style.scrollBehavior = "none";
-        carouselTrack.style.transform = `translate3d(-${
-          imageWidth * realImages[0].index
-        }px,0,0)`;
-        carouselImages[realImages[0].index].classList.add("active");
-        moveDot(realImages.findIndex((i) => i.index === realImages[0].index));
-        moveDot(
-          realImages.findIndex((i) => i.index === prevIndex),
-          "remove"
+        containerTransform(
+          "none",
+          `translate3d(-${imageWidth * startImageIndex}px,0,0)`
         );
-        carouselImages[lastImage + 1].classList.remove("active"); // 刪除clone圖片的active
-        currentIndex = realImages[0].index;
+        addActive(startImageIndex);
+        currentIndex = startImageIndex;
       }, 500);
     }
-    // 移動到實際圖片位置
-    carouselTrack.style.transition = "transform 0.5s ease ";
-    carouselTrack.style.transform = `translate3d(-${
-      imageWidth * currentIndex
-    }px,0,0)`;
-    carouselImages[currentIndex].classList.add("active");
-    console.log("realImages", realImages);
-    if (realImages.findIndex((i) => i.index === currentIndex) !== -1) {
-      moveDot(realImages.findIndex((i) => i.index === currentIndex));
-      moveDot(
-        realImages.findIndex((i) => i.index === prevIndex),
-        "remove"
-      );
-    }
+    addActive(currentIndex);
 
     setTimeout(() => {
       carouselTrack.style.transition = "";
       carouselTrack.style.scrollBehavior = "none";
-      carouselImages[prevIndex].classList.remove("active");
     }, 500);
+    clearInterval(interval);
+    interval = setInterval(moveCarousel, 2000);
   }
 
-  setInterval(moveCarousel, 2000);
+  interval = setInterval(moveCarousel, 2000);
+
+  dots.forEach((dot, index) =>
+    dot.addEventListener("click", () => {
+      console.log("click dot");
+      currentIndex = index;
+      moveCarousel();
+    })
+  );
 });
